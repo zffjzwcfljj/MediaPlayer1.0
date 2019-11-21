@@ -70,9 +70,10 @@ import java.util.List;
             TextView musicName;//歌曲名
             TextView musicSinger;//歌手
             TextView musicDuration;//时长
-            TextView musicAlbum;//序号
+            TextView musicAlbum;//专辑
 
         }
+
 
     private int resourceId;
 

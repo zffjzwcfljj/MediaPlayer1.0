@@ -8,6 +8,24 @@
     android:background="@drawable/listbackgroud"
     tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title_text"
+            android:layout_centerInParent="true"
+            android:textColor="#fff"
+            android:text="音乐播放器"
+            android:textSize="20sp"/>
+
+    </RelativeLayout>
+
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="480dp"
@@ -39,17 +57,18 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/album1"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:layout_marginLeft="25dp"
-            android:background="@drawable/background" />
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/star" />
 
         <Button
             android:id="@+id/pre1"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="0dp"
             android:layout_gravity="center"
             android:background="@drawable/previous_1" />
 
@@ -68,6 +87,14 @@
             android:layout_marginLeft="0dp"
             android:layout_gravity="center"
             android:background="@drawable/nextsong_1" />
+
+        <ImageView
+            android:id="@+id/liebiao"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="0dp"
+            android:layout_gravity="center"
+            android:src="@drawable/loop_1"/>
 
     </LinearLayout>
 

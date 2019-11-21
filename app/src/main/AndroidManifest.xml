@@ -19,9 +19,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>y
+        </activity>
         <activity android:name=".bean.Music"></activity>
         <activity android:name=".adapter.MyAdapter"></activity>
+        <activity android:name=".MusicContent"></activity>
+        <activity android:name=".util.MusicUtils"></activity>
+        <activity android:name=".util.PermissionUtils"></activity>
+        <activity android:name=".Service.MusicService"></activity>
     </application>
 
 </manifest>

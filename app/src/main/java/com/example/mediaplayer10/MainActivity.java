@@ -1,18 +1,18 @@
 package com.example.mediaplayer10;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,32 +22,38 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mediaplayer10.Service.MusicService;
+import com.example.mediaplayer10.Service.MusicServiceListener;
 import com.example.mediaplayer10.adapter.MyAdapter;
 import com.example.mediaplayer10.bean.Music;
+import com.example.mediaplayer10.util.ArtworkUtils;
 import com.example.mediaplayer10.util.MusicUtils;
 import com.example.mediaplayer10.util.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.ContentValues.TAG;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    int flag =1;
-    private Button btnStop, btnNext, btnPre;
-    private ImageView btnStart;
-    private TextView txtInfo;
+    private Button btnNext, btnPre;
+    private ImageView btnStart,liebiao;
     private ListView listView;
     private SeekBar seekBar;
     private MusicService musicService = MusicService.getMusicService;
     private Handler handler;// 处理改变进度条事件
     int UPDATE = 0x101;
+    int flag = 1,count =0;
     private boolean autoChange, manulChange;// 判断是进度条是自动改变还是手动改变
     private boolean isPause;// 判断是从暂停中恢复还是重新播放
 
     private List<Music> musicList = new ArrayList<>();
     private MyAdapter adapter;
     public int res = 0;
+
+    public Timer timer;
+    public TimerTask timerTask;
+
+    public Music music;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +65,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
 
-
         MyAdapter adapter = new MyAdapter(MainActivity.this,musicList);
         ListView listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
+
+        if (!musicService.mediaplayer.isPlaying()) {
+            res = R.drawable.timeout_1;
+        } else if (musicService.mediaplayer.isPlaying()) {
+            res = R.drawable.play_1;
+        }
+        if (res != 0)
+            ((ImageView)findViewById(R.id.start_stop1)).setImageResource(res);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//                Music music = musicList.get(position);
-
                 MusicService.getMusicService.playClick(position);
+                ((ImageView)findViewById(R.id.start_stop1)).setImageResource(R.drawable.play_1);
+                initViewPic();
+
+                    Intent intent = new Intent(MainActivity.this, MusicContent.class);
+                    intent.putExtra("index", position);
+                    startActivity(intent);
+
+            }
+        });
+
+
+        liebiao = (ImageView) findViewById(R.id.liebiao);
+        liebiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (MusicService.getMusicService.randomPlay == false ){
+                    res = R.drawable.random;
+                    MusicService.getMusicService.randomPlay = true;
+
+                } else {
+                    res = R.drawable.loop_1;
+                    MusicService.getMusicService.randomPlay = false;
+                }
+                if (res != 0)
+                    ((ImageView)findViewById(R.id.liebiao)).setImageResource(res);
             }
         });
 
@@ -95,6 +132,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     musicService.previous();
+                    if (!musicService.mediaplayer.isPlaying()) {
+                        res = R.drawable.timeout_1;
+                    } else if (musicService.mediaplayer.isPlaying()) {
+                        res = R.drawable.play_1;
+                    }
+                    if (res != 0)
+                        ((ImageView)findViewById(R.id.start_stop1)).setImageResource(res);
                 } catch (Exception e) {
                     Log.i("LAT", "上一曲异常！");
                 }
@@ -108,6 +152,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     musicService.next();
+                    if (!musicService.mediaplayer.isPlaying()) {
+                        res = R.drawable.timeout_1;
+                    } else if (musicService.mediaplayer.isPlaying()) {
+                        res = R.drawable.play_1;
+                    }
+                    if (res != 0)
+                        ((ImageView)findViewById(R.id.start_stop1)).setImageResource(res);
                 } catch (Exception e) {
                     Log.i("LAT", "下一曲异常！");
                 }
@@ -141,28 +192,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-//        Thread thread = new Thread((Runnable) this);// 自动改变进度条的线程
-//        //实例化一个handler对象
-//        handler = new Handler() {
-//            @Override
-//            public void handleMessage(Message msg) {
-//                super.handleMessage(msg);
-//                //更新UI
-//                int mMax = musicService.mediaplayer.getDuration();//最大秒数
-//                if (msg.what == UPDATE) {
-//                    try {
-//                        seekBar.setProgress(msg.arg1);
-//                        txtInfo.setText(setPlayInfo(msg.arg2 / 1000, mMax / 1000));
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    seekBar.setProgress(0);
-//                    txtInfo.setText("播放已经停止");
-//                }
-//            }
-//        };
-//        thread.start();
+        // 计时器循环刷新播放进度
+        timer = new Timer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                MediaPlayer player = MusicService.getMusicService.mediaplayer;
+                if (player.isPlaying()) {
+                    double duration = player.getDuration();
+                    double currentPosition = player.getCurrentPosition();
+
+                    if (duration == 0) return ;
+
+                    seekBar.setProgress((int)(currentPosition * 100 / duration), true);
+                }
+            }
+        };
+        timer.schedule(timerTask, 0, 10);
+
+        // 播放歌曲回调
+        MusicService.getMusicService.setMusicServiceListener(new MusicServiceListener() {
+            @Override
+            public void playCallBack(int pos) {
+                Music music = musicList.get(pos);
+                ((ImageView)findViewById(R.id.album1)).setImageResource(music.musicAlbumId);
+            }
+        });
 
     }
 
@@ -198,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
         musicList = new ArrayList<>();
         //把扫描到的音乐赋值给list
         musicList = MusicUtils.getMusicData(this);
+        MusicService.getMusicService.musicList = musicList;
         adapter = new MyAdapter(this,musicList);
         listView.setAdapter(adapter);
 
@@ -206,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
             musicSrcList.add(music.path);
         }
 
-        MusicService.getMusicService.musicList = musicSrcList;
+        MusicService.getMusicService.musicSrcList = musicSrcList;
     }
 
 
@@ -256,5 +312,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public void initViewPic() {
+        Music music = MusicService.getMusicService.currentMusic;
+        Bitmap bitmap = ArtworkUtils.getArtwork(this, music.musicName, music.id, music.musicAlbumId);
+        ((ImageView)findViewById(R.id.album1)).setImageBitmap(bitmap);
+        if (bitmap == null)
+            ((ImageView)findViewById(R.id.album1)).setImageResource(R.drawable.star);
+    }
 
 }

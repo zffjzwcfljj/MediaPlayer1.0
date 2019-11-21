@@ -2,6 +2,7 @@ package com.example.mediaplayer10.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.provider.MediaStore;
 
 import com.example.mediaplayer10.bean.Music;
@@ -16,14 +17,14 @@ public class MusicUtils {
         // 媒体库查询语句（写一个工具类MusicUtils）
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
                 null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
-        System.out.println("aaaxxxx");
-        System.out.println(cursor);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 Music music = new Music();
+                music.id = cursor.getLong(cursor.getColumnIndexOrThrow(BaseColumns._ID));
                 music.musicName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
                 music.musicSinger = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                 music.musicAlbum = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+                music.musicAlbumId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
                 music.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                 music.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
                 music.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));

@@ -5,15 +5,41 @@
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/back_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/musiclist"/>
+
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
+        android:id="@+id/musicName"
+        android:layout_width="310dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="30dp"
         android:text="z关键词"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="25dp"/>
+        android:layout_marginTop="5dp"/>
+
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true" />
+
+
+</LinearLayout>
 
         <TextView
             android:id="@+id/singer"
@@ -26,13 +52,13 @@
             android:text="林俊杰"
             android:textColor="#FFFFFF"
             android:textSize="20dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="5dp"/>
 
 
     <ImageView
         android:id="@+id/picture"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:layout_gravity="center"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"
@@ -41,14 +67,14 @@
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/circle_shape"/>
+        android:src="@drawable/circle_shape"/>
 
 
     <SeekBar
         android:id="@+id/bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="25dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,32 +83,36 @@
         android:layout_marginTop="20dp">
 
         <ImageView
+            android:id="@+id/liebiao"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="25dp"
             android:layout_gravity="center"
-            android:background="@drawable/musiclist_1"/>
+            android:src="@drawable/loop_1"/>
 
         <Button
             android:id="@+id/pre"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginLeft="10dp"
+            android:layout_gravity="center"
             android:background="@drawable/previous_1"/>
 
-        <Button
+        <ImageView
             android:id="@+id/start_stop"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            android:layout_marginLeft="1dp"
-            android:background="@drawable/play_1"
+            android:layout_marginLeft="0dp"
+            android:layout_gravity="center"
+            android:src="@drawable/play_1"
             />
 
         <Button
             android:id="@+id/next"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginLeft="1dp"
+            android:layout_marginLeft="0dp"
+            android:layout_gravity="center"
             android:background="@drawable/nextsong_1"/>
 
     </LinearLayout>

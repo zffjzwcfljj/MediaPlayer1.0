@@ -2,23 +2,28 @@ package com.example.mediaplayer10.Service;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Environment;
 import android.util.Log;
 
-import com.example.mediaplayer10.R;
 import com.example.mediaplayer10.bean.Music;
-import com.example.mediaplayer10.util.MusicUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.Random;
 
 public class MusicService {
-    public List<String> musicList;
+    public List<String> musicSrcList;
+    public List<Music> musicList;
     public MediaPlayer mediaplayer;
     public int musicPos; // 当前播放的歌曲在List中的下标,flag为标致
     public String musicName;
 
+    public Music currentMusic;  // 当前正在播放的歌曲
+
+    public boolean randomPlay; // 随机播放 默认不随机
+
     public static MusicService getMusicService = new MusicService();
+
+    public MusicServiceListener musicServiceListener;
 
     public MusicService(){
         super();
@@ -38,10 +43,9 @@ public class MusicService {
 
 
     public void play() {
-//        System.out.println("xxxxxxxxx");
         try {
             mediaplayer.reset(); //重置多媒体
-            String dataSource = musicList.get(musicPos);//得到当前播放音乐的路径
+            String dataSource = musicSrcList.get(musicPos);//得到当前播放音乐的路径
             setPlayName(dataSource);//截取歌名
             // 指定参数为音频文件
             mediaplayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -54,7 +58,13 @@ public class MusicService {
                     next();//如果当前歌曲播放完毕,自动播放下一首.
                 }
             });
-//            System.out.println("yyyyyyyyy");
+
+            currentMusic = musicList.get(musicPos);
+
+            if (musicServiceListener != null) {
+                musicServiceListener.playCallBack(musicPos);
+            }
+
         } catch (Exception e) {
             Log.v("MusicService", e.getMessage());
         }
@@ -89,12 +99,22 @@ public class MusicService {
     }
 
     public void next() {
-        musicPos = musicPos == musicList.size() - 1 ? 0 : musicPos + 1;
+        Random random = new Random();
+        if (randomPlay) {
+            musicPos = random.nextInt(musicSrcList.size());
+        } else {
+            musicPos = musicPos == musicSrcList.size() - 1 ? 0 : musicPos + 1;
+        }
         play();
     }
 
     public void previous() {
-        musicPos = musicPos == 0 ? musicList.size() - 1 : musicPos - 1;
+        Random random = new Random();
+        if (randomPlay) {
+            musicPos = random.nextInt(musicSrcList.size());
+        } else {
+            musicPos = musicPos == 0 ? musicSrcList.size() - 1 : musicPos - 1;
+        }
         play();
     }
 
@@ -105,5 +125,12 @@ public class MusicService {
         }
     }
 
+    public MusicServiceListener getMusicServiceListener() {
+        return musicServiceListener;
+    }
 
+    public void setMusicServiceListener(MusicServiceListener musicServiceListener) {
+        this.musicServiceListener = musicServiceListener;
+    }
 }
+
