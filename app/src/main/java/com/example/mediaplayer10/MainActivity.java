@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        System.out.println("create");
+
 
         if (PermissionUtils.isGrantExternalRW(this, 1)) return ;
 
@@ -68,14 +70,6 @@ public class MainActivity extends AppCompatActivity {
         MyAdapter adapter = new MyAdapter(MainActivity.this,musicList);
         ListView listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
-
-        if (!musicService.mediaplayer.isPlaying()) {
-            res = R.drawable.timeout_1;
-        } else if (musicService.mediaplayer.isPlaying()) {
-            res = R.drawable.play_1;
-        }
-        if (res != 0)
-            ((ImageView)findViewById(R.id.start_stop1)).setImageResource(res);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -87,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, MusicContent.class);
                     intent.putExtra("index", position);
                     startActivity(intent);
+
 
             }
         });
@@ -319,6 +314,21 @@ public class MainActivity extends AppCompatActivity {
         ((ImageView)findViewById(R.id.album1)).setImageBitmap(bitmap);
         if (bitmap == null)
             ((ImageView)findViewById(R.id.album1)).setImageResource(R.drawable.star);
+
     }
 
+    @Override
+    protected void onStart() {
+
+        System.out.println("start");
+
+        super.onStart();
+        if (!musicService.mediaplayer.isPlaying())
+            res = R.drawable.timeout_1;
+        else if (musicService.mediaplayer.isPlaying())
+            res = R.drawable.play_1;
+        if (res != 0)
+            ((ImageView)findViewById(R.id.start_stop1)).setImageResource(res);
+
+    }
 }
