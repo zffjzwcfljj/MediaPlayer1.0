@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -33,11 +34,12 @@ import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
     int flag =1;
-    private Button btnStart, btnStop, btnNext, btnPre;
+    private Button btnStop, btnNext, btnPre;
+    private ImageView btnStart;
     private TextView txtInfo;
     private ListView listView;
     private SeekBar seekBar;
-    private MusicService musicService = new MusicService();
+    private MusicService musicService = MusicService.getMusicService;
     private Handler handler;// 处理改变进度条事件
     int UPDATE = 0x101;
     private boolean autoChange, manulChange;// 判断是进度条是自动改变还是手动改变
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Music> musicList = new ArrayList<>();
     private MyAdapter adapter;
+    public int res = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,91 +66,81 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Music music = musicList.get(position);
+//                Music music = musicList.get(position);
+
+                MusicService.getMusicService.playClick(position);
+            }
+        });
+
+        btnStart = (ImageView) findViewById(R.id.start_stop1);
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!musicService.mediaplayer.isPlaying()) {
+                    musicService.goPlay();
+                    res = R.drawable.play_1;
+                } else if (musicService.mediaplayer.isPlaying()) {
+                    musicService.pause();
+                    res = R.drawable.timeout_1;
+                }
+                if (res != 0)
+                    ((ImageView)findViewById(R.id.start_stop1)).setImageResource(res);
+            }
+        });
+
+
+        btnPre = (Button) findViewById(R.id.pre1);
+        btnPre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    musicService.previous();
+                } catch (Exception e) {
+                    Log.i("LAT", "上一曲异常！");
+                }
 
             }
         });
 
-//        btnStart = (Button) findViewById(R.id.start_stop1);
-//        btnStart.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                try {
-//                    /**
-//                     * 引入flag作为标志，当flag为1 的时候，此时player内没有东西，所以执行musicService.play()函数
-//                     * 进行第一次播放，然后flag自增二不再进行第一次播放
-//                     * 当再次点击“开始/暂停”按钮次数即大于1 将执行暂停或继续播放goplay()函数
-//                     */
-//                    if (flag == 1) {
-//                        musicService.play();
-//                        flag++;
-//                    } else {
-//                        if (!musicService.mediaplayer.isPlaying()) {
-//                            musicService.goPlay();
-//                        } else if (musicService.mediaplayer.isPlaying()) {
-//                            musicService.pause();
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    Log.i("LAT", "开始异常！");
-//                }
-//
-//            }
-//        });
-//
-//
-//        btnPre = (Button) findViewById(R.id.pre1);
-//        btnPre.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                try {
-//                    musicService.previous();
-//                } catch (Exception e) {
-//                    Log.i("LAT", "上一曲异常！");
-//                }
-//
-//            }
-//        });
-//
-//        btnNext = (Button) findViewById(R.id.next1);
-//        btnNext.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                try {
-//                    musicService.next();
-//                } catch (Exception e) {
-//                    Log.i("LAT", "下一曲异常！");
-//                }
-//
-//            }
-//        });
-//
-//        seekBar = (SeekBar) findViewById(R.id.bar1);
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {//用于监听SeekBar进度值的改变
-//
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {//用于监听SeekBar开始拖动
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {//用于监听SeekBar停止拖动  SeekBar停止拖动后的事件
-//                int progress = seekBar.getProgress();
-//                Log.i("TAG:", "" + progress + "");
-//                int musicMax = musicService.mediaplayer.getDuration(); //得到该首歌曲最长秒数
-//                int seekBarMax = seekBar.getMax();
-//                musicService.mediaplayer
-//                        .seekTo(musicMax * progress / seekBarMax);//跳到该曲该秒
-//                autoChange = true;
-//                manulChange = false;
-//            }
-//        });
-//
-//
+        btnNext = (Button) findViewById(R.id.next1);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    musicService.next();
+                } catch (Exception e) {
+                    Log.i("LAT", "下一曲异常！");
+                }
+
+            }
+        });
+
+        seekBar = (SeekBar) findViewById(R.id.bar1);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {//用于监听SeekBar进度值的改变
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {//用于监听SeekBar开始拖动
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {//用于监听SeekBar停止拖动  SeekBar停止拖动后的事件
+                int progress = seekBar.getProgress();
+                Log.i("TAG:", "" + progress + "");
+                int musicMax = musicService.mediaplayer.getDuration(); //得到该首歌曲最长秒数
+                int seekBarMax = seekBar.getMax();
+                musicService.mediaplayer
+                        .seekTo(musicMax * progress / seekBarMax);//跳到该曲该秒
+                autoChange = true;
+                manulChange = false;
+            }
+        });
+
+
 //        Thread thread = new Thread((Runnable) this);// 自动改变进度条的线程
 //        //实例化一个handler对象
 //        handler = new Handler() {
@@ -207,54 +200,61 @@ public class MainActivity extends AppCompatActivity {
         musicList = MusicUtils.getMusicData(this);
         adapter = new MyAdapter(this,musicList);
         listView.setAdapter(adapter);
+
+        List<String> musicSrcList = new ArrayList<>();
+        for (Music music : musicList) {
+            musicSrcList.add(music.path);
+        }
+
+        MusicService.getMusicService.musicList = musicSrcList;
     }
 
 
-//    //设置当前播放的信息
-//    private String setPlayInfo(int position,int max) {
-//        String info = "正在播放:  " + musicService.musicName + "\t\t";
-//        int pMinutes = 0;
-//        while (position >= 60) {
-//            pMinutes++;
-//            position -= 60;
-//        }
-//        String now = (pMinutes < 10 ? "0" + pMinutes : pMinutes) + ":"
-//                + (position < 10 ? "0" + position : position);
-//
-//        int mMinutes = 0;
-//        while (max >= 60) {
-//            mMinutes++;
-//            max -= 60;
-//        }
-//        String all = (mMinutes < 10 ? "0" + mMinutes : mMinutes) + ":"
-//                + (max < 10 ? "0" + max : max);
-//
-//        return info + now + " / " + all;
-//    }
-//
-//
-////    @Override
-//    public void run() {
-//        int position, mMax, sMax;
-//        while (!Thread.currentThread().isInterrupted()) {
-//            if (musicService.mediaplayer != null && musicService.mediaplayer.isPlaying()) {
-//                position = musicService.getCurrentProgress();//得到当前歌曲播放进度(秒)
-//                mMax = musicService.mediaplayer.getDuration();//最大秒数
-//                sMax = seekBar.getMax();//seekBar最大值，算百分比
-//                Message m = handler.obtainMessage();//获取一个Message
-//                m.arg1 = position * sMax / mMax;//seekBar进度条的百分比
-//                m.arg2 = position;
-//                m.what = UPDATE;
-//                handler.sendMessage(m);
-//                //  handler.sendEmptyMessage(UPDATE);
-//                try {
-//                    Thread.sleep(1000);// 每间隔1秒发送一次更新消息
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+    //设置当前播放的信息
+    private String setPlayInfo(int position,int max) {
+        String info = "正在播放:  " + musicService.musicName + "\t\t";
+        int pMinutes = 0;
+        while (position >= 60) {
+            pMinutes++;
+            position -= 60;
+        }
+        String now = (pMinutes < 10 ? "0" + pMinutes : pMinutes) + ":"
+                + (position < 10 ? "0" + position : position);
+
+        int mMinutes = 0;
+        while (max >= 60) {
+            mMinutes++;
+            max -= 60;
+        }
+        String all = (mMinutes < 10 ? "0" + mMinutes : mMinutes) + ":"
+                + (max < 10 ? "0" + max : max);
+
+        return info + now + " / " + all;
+    }
+
+
+//    @Override
+    public void run() {
+        int position, mMax, sMax;
+        while (!Thread.currentThread().isInterrupted()) {
+            if (musicService.mediaplayer != null && musicService.mediaplayer.isPlaying()) {
+                position = musicService.getCurrentProgress();//得到当前歌曲播放进度(秒)
+                mMax = musicService.mediaplayer.getDuration();//最大秒数
+                sMax = seekBar.getMax();//seekBar最大值，算百分比
+                Message m = handler.obtainMessage();//获取一个Message
+                m.arg1 = position * sMax / mMax;//seekBar进度条的百分比
+                m.arg2 = position;
+                m.what = UPDATE;
+                handler.sendMessage(m);
+                //  handler.sendEmptyMessage(UPDATE);
+                try {
+                    Thread.sleep(1000);// 每间隔1秒发送一次更新消息
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
 
 }
