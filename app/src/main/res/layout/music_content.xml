@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30dp"
+        android:text="z关键词"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="25dp"/>
+
+        <TextView
+            android:id="@+id/singer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:paddingRight="10dp"
+            android:text="林俊杰"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"/>
+
+
+    <ImageView
+        android:id="@+id/picture"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/circle_shape"/>
+
+
+    <SeekBar
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="25dp"
+            android:layout_gravity="center"
+            android:background="@drawable/musiclist_1"/>
+
+        <Button
+            android:id="@+id/pre"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/previous_1"/>
+
+        <Button
+            android:id="@+id/start_stop"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginLeft="1dp"
+            android:background="@drawable/play_1"
+            />
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="1dp"
+            android:background="@drawable/nextsong_1"/>
+
+    </LinearLayout>
+
+
+
+    </LinearLayout>
